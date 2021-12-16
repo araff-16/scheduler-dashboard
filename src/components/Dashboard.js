@@ -6,26 +6,33 @@ import Panel from "./Panel";
 
 import axios from "axios"
 
+import {
+  getTotalInterviews,
+  getLeastPopularTimeSlot,
+  getMostPopularDay,
+  getInterviewsPerDay
+ } from "helpers/selectors";
+
 const data = [
   {
     id: 1,
     label: "Total Interviews",
-    value: 6
+    getvalue: getTotalInterviews
   },
   {
     id: 2,
     label: "Least Popular Time Slot",
-    value: "1pm"
+    getvalue: getLeastPopularTimeSlot
   },
   {
     id: 3,
     label: "Most Popular Day",
-    value: "Wednesday"
+    getvalue: getMostPopularDay
   },
   {
     id: 4,
     label: "Interviews Per Day",
-    value: "2.3"
+    getvalue: getInterviewsPerDay
   }
 ];
 
@@ -39,13 +46,14 @@ class Dashboard extends Component {
     interviewers:{}
   }
 
-
+  //click Handler for enlarging panels
   selectPanel (id) {
     this.setState(previousState => ({
       focused: previousState.focused !== null ? null : id
     }));
   }
 
+  //Is called once at the initial render
   componentDidMount() {
     const focused = JSON.parse(localStorage.getItem("focused"));
 
@@ -66,11 +74,9 @@ class Dashboard extends Component {
         interviewers: interviewers.data
       });
     });
-
-
-
   }
 
+  //Is called everytime the state is changed 
   componentDidUpdate(previousProps, previousState) {
     console.log("DIDUPDATE")
     if (previousState.focused !== this.state.focused) {
@@ -78,19 +84,17 @@ class Dashboard extends Component {
     }
   }
 
-
-
-
-
   render() {
     const dashboardClasses = classnames("dashboard", {"dashboard--focused": this.state.focused});
 
+    //if the loading state is true the loading omage will appear
     if (this.state.loading) {
       return <Loading />;
     }
-
+    //We use a filter to check if any panels are focused 
+    //Then we map the panel data to each panel component 
     const parsedPanels = data.filter(panel => this.state.focused === null || this.state.focused === panel.id)
-    .map((panel) => <Panel onSelect = {() => this.selectPanel(panel.id)} key={panel.id}  label={panel.label} value={panel.value} ></Panel>)
+    .map((panel) => <Panel onSelect = {() => this.selectPanel(panel.id)} key={panel.id}  label={panel.label} value={panel.getvalue(this.state)} ></Panel>)
 
     return (
       <main className={dashboardClasses}>
