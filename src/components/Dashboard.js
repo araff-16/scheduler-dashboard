@@ -34,6 +34,13 @@ class Dashboard extends Component {
     focused: null
   }
 
+
+  selectPanel (id) {
+    console.log("HELLEO")
+    this.setState({focused: id})
+    
+  }
+
   render() {
     const dashboardClasses = classnames("dashboard", {"dashboard--focused": this.state.focused});
 
@@ -42,7 +49,7 @@ class Dashboard extends Component {
     }
 
     const parsedPanels = data.filter(panel => this.state.focused === null || this.state.focused === panel.id)
-    .map((panel) => <Panel key={panel.id}  id={panel.id} label={panel.label} value={panel.value} ></Panel>)
+    .map((panel) => <Panel onSelect = {() => this.selectPanel(panel.id)} key={panel.id}  label={panel.label} value={panel.value} ></Panel>)
 
     return (
       <main className={dashboardClasses}>
